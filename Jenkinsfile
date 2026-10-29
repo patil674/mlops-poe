@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    environment {
+        PYTHON = "C:\\Users\\Piyusha\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"
+    }
+
     stages {
         stage('Checkout from GitHub') {
             steps {
@@ -11,25 +15,27 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'python -m pip install -r requirements.txt'
+                bat '"%PYTHON%" -m venv .venv'
+                bat '".venv\\Scripts\\python.exe" -m pip install --upgrade pip'
+                bat '".venv\\Scripts\\python.exe" -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Application') {
             steps {
-                bat 'python hello.py'
+                bat '".venv\\Scripts\\python.exe" hello.py'
             }
         }
 
         stage('Run pytest') {
             steps {
-                bat 'python -m pytest -v'
+                bat '".venv\\Scripts\\python.exe" -m pytest -v'
             }
         }
 
         stage('Evidently Monitoring') {
             steps {
-                bat 'python monitor.py'
+                bat '".venv\\Scripts\\python.exe" monitor.py'
             }
         }
     }
